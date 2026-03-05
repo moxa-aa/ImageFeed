@@ -157,7 +157,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bSg-xC-wJy">
-                                <rect key="frame" x="171.5" y="785" width="50" height="50"/>
+                                <rect key="frame" x="171.66666666666666" y="785" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="BzB-xc-pJX"/>
                                     <constraint firstAttribute="width" constant="50" id="UV3-8w-DaX"/>
@@ -176,8 +176,8 @@
                             <constraint firstItem="PYi-17-zgv" firstAttribute="top" secondItem="9qO-pp-G0a" secondAttribute="top" id="76y-mI-MtS"/>
                             <constraint firstItem="PYi-17-zgv" firstAttribute="leading" secondItem="9qO-pp-G0a" secondAttribute="leading" id="D7e-Oq-2Er"/>
                             <constraint firstItem="9qO-pp-G0a" firstAttribute="bottom" secondItem="PYi-17-zgv" secondAttribute="bottom" id="K0a-75-62O"/>
-                            <constraint firstItem="y9h-bf-nMd" firstAttribute="top" secondItem="9qO-pp-G0a" secondAttribute="top" constant="20" id="dKu-zL-SJz"/>
                             <constraint firstItem="bSg-xC-wJy" firstAttribute="centerX" secondItem="9qO-pp-G0a" secondAttribute="centerX" id="adA-Rh-BWX"/>
+                            <constraint firstItem="y9h-bf-nMd" firstAttribute="top" secondItem="9qO-pp-G0a" secondAttribute="top" constant="20" id="dKu-zL-SJz"/>
                             <constraint firstItem="9qO-pp-G0a" firstAttribute="bottom" secondItem="bSg-xC-wJy" secondAttribute="bottom" constant="17" id="jro-YD-KGX"/>
                         </constraints>
                     </view>
@@ -199,54 +199,10 @@
                     <view key="view" contentMode="scaleToFill" id="rGB-Xd-7pf">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Photo" translatesAutoresizingMaskIntoConstraints="NO" id="8ta-Mr-Ras">
-                                <rect key="frame" x="16" y="91" width="70" height="70"/>
-                            </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Екатерина Новикова" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XKa-c9-ZXK">
-                                <rect key="frame" x="16" y="169" width="241" height="34"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="23"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="@ekaterina_nov" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YgW-5Z-Wha">
-                                <rect key="frame" x="16" y="211" width="99" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <color key="textColor" red="0.68235294117647061" green="0.68627450980392157" blue="0.70588235294117641" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c6I-Th-BHb">
-                                <rect key="frame" x="309" y="104" width="68" height="58"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="Exit"/>
-                                <connections>
-                                    <action selector="logo:" destination="TX5-bJ-mE1" eventType="touchUpInside" id="X3Q-1Y-Kzx"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Hello World!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HZh-XZ-nHI">
-                                <rect key="frame" x="16" y="237" width="101" height="28"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="AvD-ge-uMO"/>
                         <color key="backgroundColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="8ta-Mr-Ras" firstAttribute="top" secondItem="AvD-ge-uMO" secondAttribute="top" constant="32" id="29U-1y-0hm"/>
-                            <constraint firstItem="c6I-Th-BHb" firstAttribute="top" secondItem="AvD-ge-uMO" secondAttribute="top" constant="45" id="6zG-yi-sEr"/>
-                            <constraint firstItem="8ta-Mr-Ras" firstAttribute="leading" secondItem="AvD-ge-uMO" secondAttribute="leading" constant="16" id="GvD-Bi-GeJ"/>
-                            <constraint firstItem="AvD-ge-uMO" firstAttribute="trailing" secondItem="c6I-Th-BHb" secondAttribute="trailing" constant="16" id="uUa-1M-AhM"/>
-                        </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="tab_profile_active" id="8LI-g7-bLx"/>
-                    <connections>
-                        <outlet property="exit" destination="c6I-Th-BHb" id="vcx-kY-fyX"/>
-                        <outlet property="logo" destination="8ta-Mr-Ras" id="fkG-9m-zT2"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ffa-4Y-0a2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -256,8 +212,6 @@
     <resources>
         <image name="0" width="1600" height="1059"/>
         <image name="Backward" width="24" height="24"/>
-        <image name="Exit" width="44" height="44"/>
-        <image name="Photo" width="70" height="70"/>
         <image name="like_button_on" width="42" height="42"/>
         <image name="share_button" width="50" height="50"/>
         <image name="tab_editorial_active" width="30" height="30"/>
