@@ -178,7 +178,7 @@
                             <constraint firstItem="9qO-pp-G0a" firstAttribute="bottom" secondItem="PYi-17-zgv" secondAttribute="bottom" id="K0a-75-62O"/>
                             <constraint firstItem="bSg-xC-wJy" firstAttribute="centerX" secondItem="9qO-pp-G0a" secondAttribute="centerX" id="adA-Rh-BWX"/>
                             <constraint firstItem="y9h-bf-nMd" firstAttribute="top" secondItem="9qO-pp-G0a" secondAttribute="top" constant="20" id="dKu-zL-SJz"/>
-                            <constraint firstItem="9qO-pp-G0a" firstAttribute="bottom" secondItem="bSg-xC-wJy" secondAttribute="bottom" constant="17" id="jro-YD-KGX"/>
+                            <constraint firstItem="9qO-pp-G0a" firstAttribute="bottom" secondItem="bSg-xC-wJy" secondAttribute="bottom" constant="16" id="jro-YD-KGX"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="ayG-VV-BGC"/>
