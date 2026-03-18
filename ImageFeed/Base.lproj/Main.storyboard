@@ -264,7 +264,7 @@
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="HeD-WW-tOW" kind="presentation" identifier="ShowWebView" modalPresentationStyle="fullScreen" id="lDn-BV-GE6"/>
+                                    <segue destination="HeD-WW-tOW" kind="show" identifier="ShowWebView" id="lDn-BV-GE6"/>
                                 </connections>
                             </button>
                         </subviews>
