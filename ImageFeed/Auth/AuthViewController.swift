@@ -38,14 +38,25 @@ final class AuthViewController: UIViewController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor(named: "ypBlack")
     }
+    
+    private func showAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так(",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alert.addAction(okAction)
+        present(alert, animated: true)
+    }
 }
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        ProgressHUD.animate()
+        UIBlockingProgressHUD.show()
         
         OAuth2Service.shared.fetchOAuthToken(code: code) { result in
-            ProgressHUD.dismiss()
+            UIBlockingProgressHUD.dismiss()
             DispatchQueue.main.async {
                 switch result {
                 case .success(let token):
@@ -54,6 +65,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                     self.delegate?.didAuthenticate(self)
                 case .failure(let error):
                     print("❌ Failed to fetch token: \(error)")
+                    self.showAlert()
                 }
             }
         }

@@ -7,34 +7,58 @@
 
 import Foundation
 
+enum AuthServiceError: Error {
+    case invalidRequest
+}
+
 final class OAuth2Service {
     static let shared = OAuth2Service()
+    
+    private let urlSession = URLSession.shared
+    private var task: URLSessionTask?
+    private var lastCode: String?
     
     private init() {}
     
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
-        guard let request = makeOAuthTokenRequest(code: code) else {
-            completion(.failure(NetworkError.invalidRequest))
-            return
-        }
+        assert(Thread.isMainThread)
         
-        let task = URLSession.shared.data(for: request) { result in
-            switch result {
-            case .success(let data):
-                do {
-                    let decoder = JSONDecoder()
-                    let responseBody = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    completion(.success(responseBody.accessToken))
-                } catch {
-                    print("[OAuth2Service]: Error decoding OAuthTokenResponseBody - \(error)")
-                    completion(.failure(NetworkError.decodingError(error)))
-                }
-            case .failure(let error):
-                print("[OAuth2Service]: Network Error - \(error)")
-                completion(.failure(error))
+        if task != nil {
+            if lastCode != code {
+                task?.cancel()
+            } else {
+                completion(.failure(AuthServiceError.invalidRequest))
+                return
+            }
+        } else {
+            if lastCode == code {
+                completion(.failure(AuthServiceError.invalidRequest))
+                return
             }
         }
         
+        lastCode = code
+        guard let request = makeOAuthTokenRequest(code: code) else {
+            completion(.failure(AuthServiceError.invalidRequest))
+            return
+        }
+        
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
+            DispatchQueue.main.async {
+                self?.task = nil
+                self?.lastCode = nil
+                
+                switch result {
+                case .success(let responseBody):
+                    completion(.success(responseBody.accessToken))
+                case .failure(let error):
+                    print("[OAuth2Service]: Network Error - \(error)")
+                    completion(.failure(error))
+                }
+            }
+        }
+        
+        self.task = task
         task.resume()
     }
     
