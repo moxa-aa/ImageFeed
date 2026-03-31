@@ -67,7 +67,7 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(named: "ypBlack")
+        view.backgroundColor = UIColor(resource: .ypBlack)
         addSubviews()
         setupConstraints()
         
@@ -80,6 +80,11 @@ final class ProfileViewController: UIViewController {
                 guard let self = self else { return }
                 self.updateAvatar()
             }
+        avatarImageView.addGradient()
+        nameLabel.addGradient()
+        loginNameLabel.addGradient()
+        descriptionLabel.addGradient()
+        
         updateAvatar()
         
         if let profile = ProfileService.shared.profile {
@@ -93,13 +98,19 @@ final class ProfileViewController: UIViewController {
             let url = URL(string: profileImageURL)
         else { return }
         
-        avatarImageView.kf.setImage(with: url)
+        avatarImageView.kf.setImage(with: url) { [weak self] _ in
+            self?.avatarImageView.removeGradient()
+        }
     }
     
     private func updateProfileDetails(profile: Profile) {
         nameLabel.text = profile.name
         loginNameLabel.text = profile.loginName
         descriptionLabel.text = profile.bio
+        
+        nameLabel.removeGradient()
+        loginNameLabel.removeGradient()
+        descriptionLabel.removeGradient()
     }
     
     // MARK: - Private Methods
@@ -143,5 +154,30 @@ final class ProfileViewController: UIViewController {
     
     @objc
     private func didTapLogoutButton() {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        let confirmAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            ProfileLogoutService.shared.logout()
+            
+            guard let window = UIApplication.shared.windows.first else {
+                assertionFailure("Invalid Configuration")
+                return
+            }
+            
+            let splashViewController = SplashViewController()
+            window.rootViewController = splashViewController
+            window.makeKeyAndVisible()
+        }
+        
+        let cancelAction = UIAlertAction(title: "Нет", style: .cancel, handler: nil)
+        
+        alert.addAction(confirmAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
     }
 }

@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class SingleImageViewController: UIViewController {
+    
+    var largeImageURL: URL?
     
     var image: UIImage? {
         didSet {
@@ -29,10 +32,36 @@ final class SingleImageViewController: UIViewController {
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
         
-        guard let image = image else { return }
-        imageView.image = image
-        imageView.frame.size = image.size
-        rescaleAndCenterImageInScrollView(image: image)
+        loadFullSizeImage()
+    }
+    
+    private func loadFullSizeImage() {
+        guard let largeImageURL = largeImageURL else { return }
+        
+        UIBlockingProgressHUD.show()
+        imageView.kf.setImage(with: largeImageURL) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            guard let self = self else { return }
+            switch result {
+            case .success(let imageResult):
+                self.image = imageResult.image
+            case .failure:
+                self.showError()
+            }
+        }
+    }
+    
+    private func showError() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так. Попробовать ещё раз?",
+            message: nil,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Не надо", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Повторить", style: .default) { [weak self] _ in
+            self?.loadFullSizeImage()
+        })
+        present(alert, animated: true)
     }
     
     // MARK: - Actions

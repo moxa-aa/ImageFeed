@@ -25,7 +25,7 @@ enum ProfileImageServiceError: Error {
 
 final class ProfileImageService {
     static let shared = ProfileImageService()
-    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
+    static let didChangeNotification = Notification.Name("ProfileImageProviderDidChange")
     
     private(set) var avatarURL: String?
     
@@ -48,28 +48,26 @@ final class ProfileImageService {
         }
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
-            DispatchQueue.main.async {
-                self?.task = nil
-                
-                switch result {
-                case .success(let userResult):
-                    guard let avatarURL = userResult.profileImage?.small else {
-                        print("[ProfileImageService]: 'small' URL not found in response")
-                        completion(.failure(NetworkError.decodingError(NSError(domain: "MissingImageURL", code: 0, userInfo: nil))))
-                        return
-                    }
-                    
-                    self?.avatarURL = avatarURL
-                    completion(.success(avatarURL))
-                    NotificationCenter.default
-                        .post(
-                            name: ProfileImageService.didChangeNotification,
-                            object: self,
-                            userInfo: ["URL": avatarURL])
-                case .failure(let error):
-                    print("[ProfileImageService]: Network Error - \(error)")
-                    completion(.failure(error))
+            self?.task = nil
+            
+            switch result {
+            case .success(let userResult):
+                guard let avatarURL = userResult.profileImage?.small else {
+                    print("[ProfileImageService]: 'small' URL not found in response")
+                    completion(.failure(NetworkError.decodingError(NSError(domain: "MissingImageURL", code: 0, userInfo: nil))))
+                    return
                 }
+                
+                self?.avatarURL = avatarURL
+                completion(.success(avatarURL))
+                NotificationCenter.default
+                    .post(
+                        name: ProfileImageService.didChangeNotification,
+                        object: self,
+                        userInfo: ["URL": avatarURL])
+            case .failure(let error):
+                print("[ProfileImageService]: Network Error - \(error)")
+                completion(.failure(error))
             }
         }
         
@@ -77,17 +75,21 @@ final class ProfileImageService {
         task.resume()
     }
     
+    func clearAvatar() {
+        avatarURL = nil
+    }
+    
     private func makeProfileImageRequest(username: String) -> URLRequest? {
         guard let url = URL(string: Constants.defaultBaseURLString + "/users/\(username)") else {
             return nil
         }
         
-        guard let token = OAuth2TokenStorage().token else {
+        guard let token = OAuth2TokenStorage.shared.token else {
             return nil
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = HTTPMethod.get.rawValue
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         return request

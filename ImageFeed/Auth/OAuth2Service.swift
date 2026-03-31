@@ -44,17 +44,15 @@ final class OAuth2Service {
         }
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
-            DispatchQueue.main.async {
-                self?.task = nil
-                self?.lastCode = nil
-                
-                switch result {
-                case .success(let responseBody):
-                    completion(.success(responseBody.accessToken))
-                case .failure(let error):
-                    print("[OAuth2Service]: Network Error - \(error)")
-                    completion(.failure(error))
-                }
+            self?.task = nil
+            self?.lastCode = nil
+            
+            switch result {
+            case .success(let responseBody):
+                completion(.success(responseBody.accessToken))
+            case .failure(let error):
+                print("[OAuth2Service]: Network Error - \(error)")
+                completion(.failure(error))
             }
         }
         
@@ -78,7 +76,7 @@ final class OAuth2Service {
         guard let url = urlComponents.url else { return nil }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        request.httpMethod = HTTPMethod.post.rawValue
         return request
     }
 }

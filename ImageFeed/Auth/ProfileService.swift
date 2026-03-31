@@ -56,24 +56,26 @@ final class ProfileService {
         }
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
-            DispatchQueue.main.async {
-                self?.task = nil
-                
-                switch result {
-                case .success(let profileResult):
-                    guard let self = self else { return }
-                    let profile = self.convert(profileResult)
-                    self.profile = profile
-                    completion(.success(profile))
-                case .failure(let error):
-                    print("[ProfileService]: Network Error - \(error)")
-                    completion(.failure(error))
-                }
+            self?.task = nil
+            
+            switch result {
+            case .success(let profileResult):
+                guard let self = self else { return }
+                let profile = self.convert(profileResult)
+                self.profile = profile
+                completion(.success(profile))
+            case .failure(let error):
+                print("[ProfileService]: Network Error - \(error)")
+                completion(.failure(error))
             }
         }
         
         self.task = task
         task.resume()
+    }
+    
+    func clearProfile() {
+        profile = nil
     }
     
     private func convert(_ profileResult: ProfileResult) -> Profile {
@@ -97,7 +99,7 @@ final class ProfileService {
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = HTTPMethod.get.rawValue
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         return request

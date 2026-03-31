@@ -8,11 +8,11 @@
 import UIKit
 
 final class SplashViewController: UIViewController {
-    private let oauth2TokenStorage = OAuth2TokenStorage()
+    private let oauth2TokenStorage = OAuth2TokenStorage.shared
     private let profileService = ProfileService.shared
     
     private let logoImageView: UIImageView = {
-        let image = UIImage(named: "splash_screen_logo") ?? UIImage(named: "auth_screen_logo")
+        let image = UIImage(resource: .splashScreenLogo)
         let imageView = UIImageView(image: image)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -53,7 +53,11 @@ final class SplashViewController: UIViewController {
     }
 
     private func switchToTabBarController() {
-        guard let window = UIApplication.shared.windows.first else { fatalError("Invalid Configuration") }
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            assertionFailure("Invalid Configuration")
+            return
+        }
         let tabBarController = UIStoryboard(name: "Main", bundle: .main)
             .instantiateViewController(withIdentifier: "TabBarViewController")
         window.rootViewController = tabBarController
@@ -63,7 +67,8 @@ final class SplashViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         guard let navigationController = storyboard.instantiateViewController(withIdentifier: "NavigationController") as? UINavigationController,
               let authViewController = navigationController.viewControllers.first as? AuthViewController else {
-            fatalError("Failed to instantiate NavigationController or AuthViewController from Storyboard")
+            assertionFailure("Failed to instantiate NavigationController or AuthViewController from Storyboard")
+            return
         }
         
         authViewController.delegate = self

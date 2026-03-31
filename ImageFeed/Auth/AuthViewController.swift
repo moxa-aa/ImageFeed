@@ -55,18 +55,18 @@ extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         UIBlockingProgressHUD.show()
         
-        OAuth2Service.shared.fetchOAuthToken(code: code) { result in
+        OAuth2Service.shared.fetchOAuthToken(code: code) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let token):
-                    OAuth2TokenStorage().token = token
-                    print("✅ Successfully fetched and saved token: \(token)")
-                    self.delegate?.didAuthenticate(self)
-                case .failure(let error):
-                    print("❌ Failed to fetch token: \(error)")
-                    self.showAlert()
-                }
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let token):
+                OAuth2TokenStorage.shared.token = token
+                print("✅ Successfully fetched and saved token: \(token)")
+                self.delegate?.didAuthenticate(self)
+            case .failure(let error):
+                print("❌ Failed to fetch token: \(error)")
+                self.showAlert()
             }
         }
     }
