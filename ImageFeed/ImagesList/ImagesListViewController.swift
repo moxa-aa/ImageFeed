@@ -75,7 +75,7 @@ final class ImagesListViewController: UIViewController {
 
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photos.count
+        photos.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -104,11 +104,9 @@ extension ImagesListViewController {
         if let imageURL = URL(string: photo.thumbImageURL) {
             cell.cellImage.kf.setImage(
                 with: imageURL,
-                placeholder: UIImage(named: "stub") // По умолчанию ищем ассет "stub"
-            ) { [weak self] _ in
+                placeholder: UIImage(named: "Loader")
+            ) { _ in
                 cell.cellImage.removeGradient()
-                guard let self = self else { return }
-                self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
         }
         
@@ -124,7 +122,8 @@ extension ImagesListViewController {
 
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
+        tableView.deselectRow(at: indexPath, animated: true)
+        performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -153,14 +152,13 @@ extension ImagesListViewController: ImagesListCellDelegate {
         
         UIBlockingProgressHUD.show()
         ImagesListService.shared.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
-            guard let self = self else { return }
+            UIBlockingProgressHUD.dismiss()
+            guard let self else { return }
             switch result {
             case .success:
                 self.photos = ImagesListService.shared.photos
                 cell.setIsLiked(self.photos[indexPath.row].isLiked)
-                UIBlockingProgressHUD.dismiss()
             case .failure:
-                UIBlockingProgressHUD.dismiss()
                 let alert = UIAlertController(
                     title: "Что-то пошло не так(",
                     message: "Не удалось изменить статус лайка",

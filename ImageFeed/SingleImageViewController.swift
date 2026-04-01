@@ -25,6 +25,14 @@ final class SingleImageViewController: UIViewController {
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var scrollView: UIScrollView!
     
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.color = .white
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -32,16 +40,30 @@ final class SingleImageViewController: UIViewController {
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
         
-        loadFullSizeImage()
+        view.addSubview(activityIndicator)
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Ensure image only loads once, not on every layout cycle or dismissal
+        if image == nil {
+            loadFullSizeImage()
+        }
     }
     
     private func loadFullSizeImage() {
         guard let largeImageURL = largeImageURL else { return }
         
-        UIBlockingProgressHUD.show()
+        activityIndicator.startAnimating()
+        
         imageView.kf.setImage(with: largeImageURL) { [weak self] result in
-            UIBlockingProgressHUD.dismiss()
-            guard let self = self else { return }
+            guard let self else { return }
+            self.activityIndicator.stopAnimating()
             switch result {
             case .success(let imageResult):
                 self.image = imageResult.image
@@ -89,7 +111,7 @@ final class SingleImageViewController: UIViewController {
         let imageSize = image.size
         let hScale = visibleRectSize.width / imageSize.width
         let vScale = visibleRectSize.height / imageSize.height
-        let scale = min(maxZoomScale, max(minZoomScale, min(hScale, vScale)))
+        let scale = min(maxZoomScale, max(minZoomScale, max(hScale, vScale)))
         scrollView.setZoomScale(scale, animated: false)
         scrollView.layoutIfNeeded()
         centerImage()

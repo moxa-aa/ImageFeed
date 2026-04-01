@@ -80,11 +80,10 @@ final class ProfileImageService {
     }
     
     private func makeProfileImageRequest(username: String) -> URLRequest? {
-        guard let url = URL(string: Constants.defaultBaseURLString + "/users/\(username)") else {
-            return nil
-        }
-        
-        guard let token = OAuth2TokenStorage.shared.token else {
+        guard
+            let url = URL(string: Constants.defaultBaseURLString + "/users/\(username)"),
+            let token = OAuth2TokenStorage.shared.token
+        else {
             return nil
         }
         

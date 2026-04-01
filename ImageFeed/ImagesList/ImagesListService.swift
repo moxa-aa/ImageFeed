@@ -20,7 +20,7 @@ final class ImagesListService {
     func fetchPhotosNextPage() {
         assert(Thread.isMainThread)
         
-        if task != nil { return }
+        guard task == nil else { return }
         
         let nextPage = (lastLoadedPage ?? 0) + 1
         
@@ -84,7 +84,7 @@ final class ImagesListService {
             guard let self = self else { return }
             
             switch result {
-            case .success(_):
+            case .success:
                 if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
                     let photo = self.photos[index]
                     let newPhoto = Photo(

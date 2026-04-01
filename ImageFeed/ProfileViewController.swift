@@ -160,10 +160,11 @@ final class ProfileViewController: UIViewController {
             preferredStyle: .alert
         )
         
-        let confirmAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+        let confirmAction = UIAlertAction(title: "Да", style: .default) { _ in
             ProfileLogoutService.shared.logout()
             
-            guard let window = UIApplication.shared.windows.first else {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first else {
                 assertionFailure("Invalid Configuration")
                 return
             }

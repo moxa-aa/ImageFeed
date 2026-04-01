@@ -36,7 +36,7 @@ final class AuthViewController: UIViewController {
         navigationController?.navigationBar.backIndicatorImage = UIImage(named: "nav_back_button")
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button")
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem?.tintColor = UIColor(named: "ypBlack")
+        navigationItem.backBarButtonItem?.tintColor = UIColor(resource: .ypBlack)
     }
     
     private func showAlert() {
@@ -57,7 +57,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
         
         OAuth2Service.shared.fetchOAuthToken(code: code) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
-            guard let self = self else { return }
+            guard let self else { return }
             
             switch result {
             case .success(let token):
