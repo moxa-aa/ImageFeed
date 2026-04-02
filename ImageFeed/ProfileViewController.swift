@@ -6,8 +6,17 @@
 //
 
 import UIKit
+import Kingfisher
 
-final class ProfileViewController: UIViewController {
+protocol ProfileViewControllerProtocol: AnyObject {
+    var presenter: ProfilePresenterProtocol? { get set }
+    func updateAvatar()
+    func updateProfileDetails(profile: Profile)
+}
+
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
+    var presenter: ProfilePresenterProtocol?
+
     
     // MARK: - Private Properties
     
@@ -56,16 +65,47 @@ final class ProfileViewController: UIViewController {
         )
         button.tintColor = UIColor(red: 245/255, green: 107/255, blue: 108/255, alpha: 1) // #F56B6C
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.accessibilityIdentifier = "logoutButton"
+        button.accessibilityIdentifier = "logout button"
         return button
     }()
+    
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = UIColor(resource: .ypBlack)
         addSubviews()
         setupConstraints()
+        
+        avatarImageView.addGradient()
+        nameLabel.addGradient()
+        loginNameLabel.addGradient()
+        descriptionLabel.addGradient()
+        
+        presenter?.viewDidLoad()
+    }
+    
+    func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        
+        avatarImageView.kf.setImage(with: url) { [weak self] _ in
+            self?.avatarImageView.removeGradient()
+        }
+    }
+    
+    func updateProfileDetails(profile: Profile) {
+        nameLabel.text = profile.name
+        loginNameLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio
+        
+        nameLabel.removeGradient()
+        loginNameLabel.removeGradient()
+        descriptionLabel.removeGradient()
     }
     
     // MARK: - Private Methods
@@ -109,5 +149,31 @@ final class ProfileViewController: UIViewController {
     
     @objc
     private func didTapLogoutButton() {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        let confirmAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            self?.presenter?.logout()
+            
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first else {
+                assertionFailure("Invalid Configuration")
+                return
+            }
+            
+            let splashViewController = SplashViewController()
+            window.rootViewController = splashViewController
+            window.makeKeyAndVisible()
+        }
+        
+        let cancelAction = UIAlertAction(title: "Нет", style: .cancel, handler: nil)
+        
+        alert.addAction(confirmAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
     }
 }

@@ -26,6 +26,10 @@ final class AuthViewController: UIViewController {
                 assertionFailure("Failed to prepare for \(showWebViewSegueIdentifier)")
                 return
             }
+            let authHelper = AuthHelper()
+            let webViewPresenter = WebViewPresenter(authHelper: authHelper)
+            webViewViewController.presenter = webViewPresenter
+            webViewPresenter.view = webViewViewController
             webViewViewController.delegate = self
         } else {
             super.prepare(for: segue, sender: sender)
@@ -36,25 +40,37 @@ final class AuthViewController: UIViewController {
         navigationController?.navigationBar.backIndicatorImage = UIImage(named: "nav_back_button")
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button")
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem?.tintColor = UIColor(named: "ypBlack")
+        navigationItem.backBarButtonItem?.tintColor = UIColor(resource: .ypBlack)
+    }
+    
+    private func showAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так(",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alert.addAction(okAction)
+        present(alert, animated: true)
     }
 }
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        ProgressHUD.animate()
+        UIBlockingProgressHUD.show()
         
-        OAuth2Service.shared.fetchOAuthToken(code: code) { result in
-            ProgressHUD.dismiss()
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let token):
-                    OAuth2TokenStorage().token = token
-                    print("✅ Successfully fetched and saved token: \(token)")
-                    self.delegate?.didAuthenticate(self)
-                case .failure(let error):
-                    print("❌ Failed to fetch token: \(error)")
-                }
+        OAuth2Service.shared.fetchOAuthToken(code: code) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            guard let self else { return }
+            
+            switch result {
+            case .success(let token):
+                OAuth2TokenStorage.shared.token = token
+                print("✅ Successfully fetched and saved token: \(token)")
+                self.delegate?.didAuthenticate(self)
+            case .failure(let error):
+                print("❌ Failed to fetch token: \(error)")
+                self.showAlert()
             }
         }
     }
