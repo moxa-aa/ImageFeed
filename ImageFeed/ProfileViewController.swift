@@ -8,7 +8,15 @@
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
+protocol ProfileViewControllerProtocol: AnyObject {
+    var presenter: ProfilePresenterProtocol? { get set }
+    func updateAvatar()
+    func updateProfileDetails(profile: Profile)
+}
+
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
+    var presenter: ProfilePresenterProtocol?
+
     
     // MARK: - Private Properties
     
@@ -57,7 +65,7 @@ final class ProfileViewController: UIViewController {
         )
         button.tintColor = UIColor(red: 245/255, green: 107/255, blue: 108/255, alpha: 1) // #F56B6C
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.accessibilityIdentifier = "logoutButton"
+        button.accessibilityIdentifier = "logout button"
         return button
     }()
     
@@ -71,28 +79,15 @@ final class ProfileViewController: UIViewController {
         addSubviews()
         setupConstraints()
         
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
         avatarImageView.addGradient()
         nameLabel.addGradient()
         loginNameLabel.addGradient()
         descriptionLabel.addGradient()
         
-        updateAvatar()
-        
-        if let profile = ProfileService.shared.profile {
-            updateProfileDetails(profile: profile)
-        }
+        presenter?.viewDidLoad()
     }
     
-    private func updateAvatar() {
+    func updateAvatar() {
         guard
             let profileImageURL = ProfileImageService.shared.avatarURL,
             let url = URL(string: profileImageURL)
@@ -103,7 +98,7 @@ final class ProfileViewController: UIViewController {
         }
     }
     
-    private func updateProfileDetails(profile: Profile) {
+    func updateProfileDetails(profile: Profile) {
         nameLabel.text = profile.name
         loginNameLabel.text = profile.loginName
         descriptionLabel.text = profile.bio
@@ -160,8 +155,8 @@ final class ProfileViewController: UIViewController {
             preferredStyle: .alert
         )
         
-        let confirmAction = UIAlertAction(title: "Да", style: .default) { _ in
-            ProfileLogoutService.shared.logout()
+        let confirmAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            self?.presenter?.logout()
             
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let window = windowScene.windows.first else {
